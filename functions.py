@@ -29,7 +29,8 @@ def count_words(file_name):
 
 def translate_words(dict_words, token):
     for word in dict_words:
-        link = 'https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=' + token + '&lang=en-ru&text=' + word + '&flags=4'
+        link = 'https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=' + token + \
+               '&lang=en-ru&text=' + word + '&flags=4'
         response = requests.get(link, timeout=10)
         translate = json.loads(response.text)
         try:
