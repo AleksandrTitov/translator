@@ -8,6 +8,7 @@ class Translator(object):
     def __init__(self, api_token, file_to_translate):
         self.api_token = api_token
         self.file_to_translate = file_to_translate
+        self.attempt_count = 10
 
     def count_words(self):
         """
@@ -41,8 +42,17 @@ class Translator(object):
         for word in dict_words:
             link = 'https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=' + self.api_token + \
                    '&lang=en-ru&text=' + word + '&flags=4'
-            response = requests.get(link, timeout=10)
-            translate = json.loads(response.text)
+            error_count = 0
+            while True:
+                try:
+                    response = requests.get(link, timeout=10)
+                    translate = json.loads(response.text)
+                    break
+                except requests.exceptions.ReadTimeout:
+                    error_count += 1
+                    if error_count == self.attempt_count:
+                        translate = None
+                        break
             try:
                 word_tr = translate['def'][0]['tr'][0]['text']
             except IndexError:
